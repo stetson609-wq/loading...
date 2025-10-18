@@ -1,157 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Personal Site</title>
-<meta name="theme-color" content="#111111">
-<style>
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #111111;
-  color: #f5f5f5;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  padding: 20px;
-  box-sizing: border-box;
-}
-h1 { font-size: 2.5rem; margin-bottom: 1rem; text-align: center; text-shadow: 0 0 8px #00f0ff; }
-p { font-size: 1rem; margin-bottom: 2rem; color: #ccc; text-align: center; }
-button {
-  padding: 12px 30px;
-  font-size: 1rem;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #00f0ff, #0050ff);
-  color: #111;
-  font-weight: bold;
-  box-shadow: 0 5px 15px rgba(0,255,255,0.4);
-  transition: all 0.3s ease;
-}
-button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,255,255,0.6); }
-footer { position: absolute; bottom: 10px; font-size: 0.85rem; color: #666; text-align: center; width: 100%; }
-@media (max-width:600px){
-  h1{font-size:2rem;}
-  p{font-size:0.9rem;}
-  button{padding:10px 20px;font-size:0.9rem;}
-}
-</style>
-</head>
-<body>
-<h1>Welcome</h1>
-<p>Click below to open the full-page embed with smooth animated favicon and GitHub script.</p>
-<button id="openBtn">Open Site</button>
-<footer>My Personal Project</footer>
-
-<script>
-const totalFrames = 64;
-const frameDelay = 90;
-const favicon16Folder = '/favicon16';
-const favicon32Folder = '/favicon32';
-
-// Generate frame names
-function generateFrames(folder) {
-  const frames = [];
-  for (let i = 0; i < totalFrames; i++) {
-    const num = String(i).padStart(3,'0');
-    frames.push(`${folder}/frame_${num}.png`);
-  }
-  return frames;
-}
-
-document.getElementById('openBtn').addEventListener('click', () => {
-  const win = window.open('about:blank','_blank');
-  if(!win) return alert('Popup blocked! Please allow popups.');
-
-  const folder = window.devicePixelRatio > 1 ? favicon32Folder : favicon16Folder;
-  const frames = generateFrames(folder);
-
-  // Preload first 8 frames instantly
-  const images = [];
-  const preloadCount = Math.min(8, frames.length);
-  frames.forEach((src,i) => {
-    const img = new Image();
-    img.src = src;
-    images.push(img);
-    if(i < preloadCount) img.onload = () => {};
-  });
-
-  // Remaining frames load asynchronously
-  for(let i=preloadCount; i<frames.length; i++) images[i].onload = () => {};
-
-  // Write popup content
-  win.document.write(`
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loading...</title>
-<meta name="theme-color" content="#111111">
-<link rel="icon" href="${frames[0]}">
-<style>
-html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#111;}
-iframe{width:100vw;height:100vh;border:none;}
-</style>
-</head>
-<body>
-<iframe src="https://nullxiety.com" allowfullscreen></iframe>
-<script>
-// Favicon animation
-const frames = ${JSON.stringify(frames)};
-const frameDelay = ${frameDelay};
-const images = [];
-frames.forEach(src => { const img = new Image(); img.src = src; images.push(img); });
-const canvas = document.createElement('canvas');
-let size = Math.min(32, window.devicePixelRatio > 1 ? 32 : 16);
-canvas.width = size; canvas.height = size;
-const ctx = canvas.getContext('2d');
-const link = document.querySelector('link[rel="icon"]') || document.createElement('link');
-link.rel='icon';
-document.head.appendChild(link);
-
-let current = 0;
-let lastTime = performance.now();
-function animateFavicon(now){
-  if(now - lastTime >= frameDelay){
-    const img = images[current];
-    if(img.complete){
-      ctx.clearRect(0,0,size,size);
-      ctx.drawImage(img,0,0,size,size);
-      link.href = canvas.toDataURL('image/png');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Personal Site</title>
+  <meta name="theme-color" content="#111111">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #111111;
+      color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
     }
-    current = (current + 1) % images.length;
-    lastTime = now;
-  }
-  requestAnimationFrame(animateFavicon);
-}
-requestAnimationFrame(animateFavicon);
+    h1 { 
+      font-size: 2.5rem; 
+      margin-bottom: 1rem; 
+      text-align: center; 
+      text-shadow: 0 0 8px #00f0ff; 
+    }
+    p { 
+      font-size: 1rem; 
+      margin-bottom: 2rem; 
+      color: #ccc; 
+      text-align: center; 
+    }
+    button {
+      padding: 12px 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #00f0ff, #0050ff);
+      color: #111;
+      font-weight: bold;
+      box-shadow: 0 5px 15px rgba(0,255,255,0.4);
+      transition: all 0.3s ease;
+    }
+    button:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 8px 20px rgba(0,255,255,0.6); 
+    }
+    footer { 
+      position: absolute; 
+      bottom: 10px; 
+      font-size: 0.85rem; 
+      color: #666; 
+      text-align: center; 
+      width: 100%; 
+    }
+    @media (max-width:600px){
+      h1{font-size:2rem;}
+      p{font-size:0.9rem;}
+      button{padding:10px 20px;font-size:0.9rem;}
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome</h1>
+  <p>Click below to open the full-page embed with smooth animated favicon and GitHub script.</p>
+  <button id="openBtn">Open Site</button>
+  <footer>My Personal Project</footer>
 
-window.addEventListener('resize',()=>{
-  size = Math.min(32, window.devicePixelRatio > 1 ? 32 : 16);
-  canvas.width = size;
-  canvas.height = size;
-});
-</script>
-</body>
-</html>
-  `);
-  win.document.close();
+  <script>
+    const totalFrames = 64;
+    const frameDelay = 90; // milliseconds
+    const favicon16Folder = '/favicon16';
+    const favicon32Folder = '/favicon32';
 
-  // Load anti-close.js after popup is ready
-  fetch('https://raw.githubusercontent.com/stetson609-wq/loading.../refs/heads/main/anti-close.js')
-    .then(res=>res.text())
-    .then(code=>{
-      const func = new Function(code + '\\n; function loop(){ try{ main(); } catch(e){console.error(e);} requestAnimationFrame(loop);} loop();');
-      win.eval(func);
-    })
-    .catch(err => console.error('Failed to load anti-close.js:', err));
-});
-</script>
+    // Generate frame paths
+    function generateFrames(folder) {
+      return Array.from({length: totalFrames}, (_, i) => {
+        return `${folder}/frame_${String(i).padStart(3,'0')}.png`;
+      });
+    }
+
+    document.getElementById('openBtn').addEventListener('click', () => {
+      const win = window.open('about:blank','_blank');
+      if(!win) return alert('Popup blocked! Please allow popups.');
+
+      const folder = window.devicePixelRatio > 1 ? favicon32Folder : favicon16Folder;
+      const frames = generateFrames(folder);
+
+      // Preload all frames before animation starts
+      const images = [];
+      let loadedCount = 0;
+      frames.forEach(src => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => {
+          loadedCount++;
+        };
+        images.push(img);
+      });
+
+      // Write popup content
+      win.document.write(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Loading...</title>
+          <meta name="theme-color" content="#111111">
+          <link rel="icon" href="${frames[0]}">
+          <style>
+            html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#111;}
+            iframe{width:100vw;height:100vh;border:none;}
+          </style>
+        </head>
+        <body>
+          <iframe src="https://nullxiety.com" allowfullscreen></iframe>
+          <script>
+            const frames = ${JSON.stringify(frames)};
+            const frameDelay = ${frameDelay};
+            const images = frames.map(src => { const img = new Image(); img.src = src; return img; });
+            const canvas = document.createElement('canvas');
+            let size = window.devicePixelRatio > 1 ? 32 : 16;
+            canvas.width = size; canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const link = document.querySelector('link[rel="icon"]') || document.createElement('link');
+            link.rel = 'icon';
+            document.head.appendChild(link);
+
+            let current = 0;
+            let lastTime = performance.now();
+
+            // Start animation only after first frame is loaded
+            function animateFavicon(now){
+              if(images[current].complete && now - lastTime >= frameDelay){
+                ctx.clearRect(0,0,size,size);
+                ctx.drawImage(images[current],0,0,size,size);
+                link.href = canvas.toDataURL('image/png');
+                current = (current + 1) % images.length;
+                lastTime = now;
+              }
+              requestAnimationFrame(animateFavicon);
+            }
+            requestAnimationFrame(animateFavicon);
+
+            window.addEventListener('resize',()=>{
+              size = window.devicePixelRatio > 1 ? 32 : 16;
+              canvas.width = size;
+              canvas.height = size;
+            });
+
+            // Load anti-close.js safely
+            fetch('https://raw.githubusercontent.com/stetson609-wq/loading.../refs/heads/main/anti-close.js')
+              .then(res => res.text())
+              .then(code => {
+                const script = document.createElement('script');
+                script.textContent = code + '\\n; function loop(){ try{ main(); } catch(e){console.error(e);} requestAnimationFrame(loop);} loop();';
+                document.body.appendChild(script);
+              })
+              .catch(err => console.error('Failed to load anti-close.js:', err));
+          <\/script>
+        </body>
+        </html>
+      `);
+      win.document.close();
+    });
+  </script>
 </body>
 </html>
