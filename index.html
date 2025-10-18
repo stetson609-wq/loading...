@@ -1,151 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>My Personal Site</title>
-<meta name="theme-color" content="#111111">
+<meta name="theme-color" content="#0b0b0b" />
 <style>
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #111111;
-  color: #f5f5f5;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  padding: 20px;
-  box-sizing: border-box;
-}
-h1 { font-size: 2.5rem; margin-bottom: 1rem; text-align: center; text-shadow: 0 0 8px #00f0ff; }
-p { font-size: 1rem; margin-bottom: 2rem; color: #ccc; text-align: center; }
-button {
-  padding: 12px 30px;
-  font-size: 1rem;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #00f0ff, #0050ff);
-  color: #111;
-  font-weight: bold;
-  box-shadow: 0 5px 15px rgba(0,255,255,0.4);
-  transition: all 0.3s ease;
-}
-button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,255,255,0.6); }
-footer { position: absolute; bottom: 10px; font-size: 0.85rem; color: #666; text-align: center; width: 100%; }
-@media (max-width:600px){
-  h1{font-size:2rem;}
-  p{font-size:0.9rem;}
-  button{padding:10px 20px;font-size:0.9rem;}
-}
+  :root{
+    --bg:#0b0b0e;
+    --panel:#0f1620;
+    --muted:#9aa6b2;
+    --accent1:#00f0ff;
+    --accent2:#0066ff;
+    --glass: rgba(255,255,255,0.02);
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#08080a);color:#eef2f5;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+  .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:28px;box-sizing:border-box;}
+  .card{
+    width:100%;max-width:920px;padding:30px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 8px 40px rgba(2,6,23,0.6);backdrop-filter: blur(6px);
+    border:1px solid rgba(255,255,255,0.03);
+  }
+  .header{display:flex;align-items:center;gap:18px;margin-bottom:18px;}
+  .logo{
+    width:68px;height:68px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#031018;font-size:18px;box-shadow:0 6px 18px rgba(0,150,255,0.12);
+  }
+  h1{font-size:1.6rem;margin:0}
+  p.lead{margin:6px 0 18px;color:var(--muted);font-size:0.98rem}
+  .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  button.primary{
+    background:linear-gradient(90deg,var(--accent1),var(--accent2));
+    color:#071018;padding:12px 22px;border-radius:10px;border:0;font-weight:700;cursor:pointer;font-size:1rem;box-shadow:0 8px 30px rgba(0,128,255,0.12);
+  }
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px 16px;border-radius:10px;color:var(--muted);cursor:pointer;}
+  .muted{color:var(--muted);font-size:0.9rem;margin-top:14px}
+  footer{margin-top:18px;color:#6d7a85;font-size:0.85rem}
+  .unlockBox{margin-top:14px;padding:12px;border-radius:10px;background:var(--glass);display:flex;gap:10px;align-items:center;border:1px solid rgba(255,255,255,0.02);}
+  .unlockBtn{padding:8px 12px;border-radius:8px;border:0;background:#fffb;color:#021;font-weight:700;cursor:pointer}
+  @media (max-width:640px){ .card{padding:18px} .header{gap:12px} .logo{width:56px;height:56px} h1{font-size:1.2rem} }
 </style>
 </head>
 <body>
-<h1>Welcome</h1>
-<p>Click below to open the full-page embed with smooth animated favicon and GitHub script.</p>
-<button id="openBtn">Open Site</button>
-<footer>My Personal Project</footer>
+  <div class="wrap">
+    <div class="card" role="main" aria-labelledby="main-title">
+      <div class="header">
+        <div class="logo">ME</div>
+        <div>
+          <h1 id="main-title">Welcome</h1>
+          <p class="lead">Open a full-page view of the site. The tab favicon will animate smoothly (exact GIF timing).</p>
+        </div>
+      </div>
+
+      <div class="controls" role="region" aria-label="controls">
+        <button id="openBtn" class="primary" title="Open the site in a new tab">Open Site</button>
+        <button id="openNewWindow" class="ghost" title="Open in a new window (separate)">&nbsp;Open Window&nbsp;</button>
+
+        <div style="flex:1"></div>
+
+        <div style="text-align:right">
+          <div style="color:var(--muted);font-size:0.88rem">Favicon: original GIF timing (64 frames, 90ms each)</div>
+        </div>
+      </div>
+
+      <div class="unlockBox" style="margin-top:18px">
+        <div style="flex:1;color:var(--muted)">To intentionally close without the warning: hold <strong>Ctrl + Shift</strong> and click <em>Allow Close</em>.</div>
+        <button id="allowClose" class="unlockBtn" aria-label="Allow close (requires Ctrl+Shift)">Allow Close</button>
+      </div>
+
+      <div class="muted" id="heuristicLog" aria-live="polite" style="margin-top:12px">
+        Close-detection: waiting...
+      </div>
+
+      <footer>My Personal Project • static (works on InfinityFree)</footer>
+    </div>
+  </div>
 
 <script>
-const totalFrames = 64;
-const defaultFrameDelay = 90; // ms per frame
-const favicon16Folder = '/favicon16';
-const favicon32Folder = '/favicon32';
+/* ========= CONFIG ========= */
+const TOTAL_FRAMES = 64;
+const FRAME_DELAY_MS = 90; // original GIF: 90ms
+const FAV16 = '/favicon16';
+const FAV32 = '/favicon32';
+const TARGET_IFRAME_URL = 'https://nullxiety.com'; // change if needed
 
-// Optional: per-frame delays if your GIF has variable timings
-const frameDelays = Array(totalFrames).fill(defaultFrameDelay);
-
-function generateFrames(folder) {
-  const frames = [];
-  for (let i = 0; i < totalFrames; i++) {
-    const num = String(i).padStart(3,'0');
-    frames.push(`${folder}/frame_${num}.png`);
+/* ========= HELPERS ========= */
+function generateFramePaths(folder, count){
+  const arr = [];
+  for(let i=0;i<count;i++){
+    arr.push(`${folder}/frame_${String(i).padStart(3,'0')}.png`);
   }
-  return frames;
+  return arr;
 }
 
-document.getElementById('openBtn').addEventListener('click', () => {
-  const win = window.open('about:blank','_blank');
-  if(!win) return alert('Popup blocked! Please allow popups.');
+/* ========= UI ELEMENTS ========= */
+const openBtn = document.getElementById('openBtn');
+const openNewWindowBtn = document.getElementById('openNewWindow');
+const allowCloseBtn = document.getElementById('allowClose');
+const heuristicLog = document.getElementById('heuristicLog');
 
-  const folder = window.devicePixelRatio > 1 ? favicon32Folder : favicon16Folder;
-  const frames = generateFrames(folder);
+/* ========= FRAME ARRAYS (auto-generated) ========= */
+const frames16 = generateFramePaths(FAV16, TOTAL_FRAMES);
+const frames32 = generateFramePaths(FAV32, TOTAL_FRAMES);
 
-  // Preload all frames in parallel
-  const images = frames.map(src => { const img = new Image(); img.src = src; return img; });
+/* ========= TRACK USER ACTIVITY & ENV ========= */
+let lastUserInteraction = 0;
+let lastBlurTs = 0;
+let lastVisibilityChange = 0;
+let lastFocusTs = 0;
 
-  // Write popup HTML
-  win.document.write(`
-<!DOCTYPE html>
+function markUserActivity(){
+  lastUserInteraction = Date.now();
+}
+['mousemove','mousedown','keydown','touchstart','wheel'].forEach(ev=>{
+  window.addEventListener(ev, markUserActivity, {passive:true});
+});
+
+window.addEventListener('visibilitychange', ()=> {
+  lastVisibilityChange = Date.now();
+});
+window.addEventListener('blur', ()=> { lastBlurTs = Date.now(); });
+window.addEventListener('focus', ()=> { lastFocusTs = Date.now(); });
+
+/* ========= UNLOCK / FORCE CLOSE MECHANISM ========= */
+let allowCloseFlag = false;
+allowCloseBtn.addEventListener('click', (e)=>{
+  // require Ctrl+Shift to confirm (to avoid accidental clicks)
+  if(!(e.ctrlKey && e.shiftKey)){
+    allowCloseBtn.textContent = 'Hold Ctrl+Shift';
+    setTimeout(()=>{ allowCloseBtn.textContent = 'Allow Close'; },1200);
+    return;
+  }
+  allowCloseFlag = true;
+  // remove beforeunload handler and close current window (if popup)
+  heuristicLog.textContent = 'Close allowed by user. You can now close the tab/window.';
+  window.removeEventListener('beforeunload', beforeUnloadHandler, {capture:true});
+  // also inform user - if this is the popup, they can now close it normally
+});
+
+/* ========= HEURISTIC FUNCTION ========= */
+function guessCloseOrigin(){
+  const now = Date.now();
+  const sinceUser = now - lastUserInteraction;
+  const sinceBlur = lastBlurTs ? (now - lastBlurTs) : Infinity;
+  const sinceVis = lastVisibilityChange ? (now - lastVisibilityChange) : Infinity;
+
+  // Heuristics summary:
+  // - If user interacted within 2000ms → user-initiated (clicked close)
+  // - If there was no recent user interaction, but visibility changed < 1500ms before unload → possibly external/automated (extension/admin)
+  // - Otherwise: unknown/automated
+  if(sinceUser <= 2000){
+    return { label: 'User-initiated (recent interaction detected)', confidence:'high' };
+  }
+  if(sinceVis <= 1500 || sinceBlur <= 1500){
+    return { label: 'Possibly external/automated (visibility or blur occurred right before)', confidence:'medium' };
+  }
+  return { label: 'Unknown - no recent user interaction (could be automated/remote)', confidence:'low' };
+}
+
+/* ========= beforeunload HANDLER ========= */
+function beforeUnloadHandler(e){
+  if(allowCloseFlag) return; // user explicitly allowed close
+
+  const guess = guessCloseOrigin();
+  // console log the heuristic for debugging
+  console.info('[close-heuristic]', guess);
+
+  // update visible status text
+  heuristicLog.textContent = `Close-detection: ${guess.label} — confidence: ${guess.confidence}. To close intentionally hold Ctrl+Shift and click "Allow Close".`;
+
+  // Best-effort custom message (note: modern browsers show a standard dialog ignoring custom text)
+  const message = `This tab is being closed (${guess.label}). If you did not intend to close it, please cancel. To intentionally close, press Ctrl+Shift and click "Allow Close".`;
+  e.preventDefault();
+  e.returnValue = message;
+  return message;
+}
+
+window.addEventListener('beforeunload', beforeUnloadHandler, {capture:true});
+
+/* ========= OPEN POPUP / ABOUT:BLANK WITH ANIMATED FAVICON ========= */
+function openAnimatedPopup(asWindow=false){
+  // open about:blank
+  const win = window.open('about:blank', asWindow ? '_blank' : '_blank');
+  if(!win){
+    alert('Popup blocked. Allow popups for this site and try again.');
+    return;
+  }
+
+  // pick frames based on DPR (prefer 32 if DPR>1 and those exist)
+  const chosen = (window.devicePixelRatio>1 && frames32.length>0) ? frames32 : frames16;
+
+  // Preload in parent for smoothness
+  chosen.forEach(src => { const img = new Image(); img.src = src; });
+
+  // Build HTML for popup
+  const popupHTML = `
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Loading...</title>
-<meta name="theme-color" content="#111111">
-<link rel="icon" href="${frames[0]}">
+<meta name="theme-color" content="#0b0b0b"/>
+<link rel="icon" href="">
 <style>
-html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#111;}
-iframe{width:100vw;height:100vh;border:none;}
+  html,body{height:100%;margin:0;background:#0b0b0b;color:#fff;overflow:hidden}
+  iframe{width:100vw;height:100vh;border:0;display:block}
 </style>
 </head>
 <body>
-<iframe src="https://nullxiety.com" allowfullscreen></iframe>
-<script>
-// ===== Favicon GIF Animation with per-frame timing =====
-const frames = ${JSON.stringify(frames)};
-const images = frames.map(src => { const img = new Image(); img.src = src; return img; });
-const frameDelays = ${JSON.stringify(frameDelays)};
-const canvas = document.createElement('canvas');
-let size = Math.min(32, window.devicePixelRatio > 1 ? 32 : 16);
-canvas.width = size; canvas.height = size;
-const ctx = canvas.getContext('2d');
-const link = document.querySelector('link[rel="icon"]') || document.createElement('link');
-link.rel='icon';
-document.head.appendChild(link);
+  <iframe src="${TARGET_IFRAME_URL}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+  <script>
+    // frames injected by parent
+    const frames = ${JSON.stringify(chosen)};
+    const FRAME_DELAY = ${FRAME_DELAY_MS};
+    // preload local images in popup as well
+    const images = frames.map(src=>{ const i=new Image(); i.src=src; return i; });
 
-let current = 0;
-let lastTime = performance.now();
+    // create canvas and pick size (prefer 32 for DPR>1 else 16; also matches the GIF's 20x20)
+    const DPR = Math.max(1, Math.floor(window.devicePixelRatio || 1));
+    const size = (DPR>1) ? 32 : 16;
+    const canvas = document.createElement('canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const link = document.querySelector('link[rel="icon"]') || document.createElement('link');
+    link.rel='icon';
+    document.head.appendChild(link);
 
-function animate(now){
-  if(now - lastTime >= frameDelays[current]){
-    const img = images[current];
-    if(img.complete){
-      ctx.clearRect(0,0,size,size);
-      ctx.drawImage(img,0,0,size,size);
-      link.href = canvas.toDataURL('image/png');
+    // Preload complete-check helper (avoid flicker on first frames)
+    let readyCount = 0;
+    images.forEach(img=>{ img.onload = ()=>{ readyCount++; }; img.onerror = ()=>{ readyCount++; }; });
+
+    // animation loop using setTimeout to match frame delay exactly per GIF
+    let idx = 0;
+    function animateStep(){
+      const img = images[idx];
+      if(img && img.complete){
+        ctx.clearRect(0,0,size,size);
+        // draw image centered and scaled (original GIF 20x20 -> we scale to 'size')
+        ctx.drawImage(img, 0, 0, size, size);
+        try{ link.href = canvas.toDataURL('image/png'); }catch(e){ /* in some browsers toDataURL may fail for cross-origin images */ }
+      }
+      idx = (idx + 1) % images.length;
+      setTimeout(animateStep, FRAME_DELAY);
     }
-    lastTime = now;
-    current = (current+1) % images.length;
-  }
-  requestAnimationFrame(animate);
-}
-requestAnimationFrame(animate);
 
-window.addEventListener('resize',()=>{
-  size = Math.min(32, window.devicePixelRatio > 1 ? 32 : 16);
-  canvas.width = size;
-  canvas.height = size;
-});
-</script>
+    // start once at least some images loaded (keeps very smooth)
+    const startWhenReady = setInterval(()=>{
+      if(readyCount >= Math.min(3, images.length)){ clearInterval(startWhenReady); animateStep(); }
+    }, 50);
+
+    // beforeunload protection in popup too
+    let allowClose = false;
+    window.addEventListener('beforeunload', function(e){
+      if(allowClose) return;
+      const msg = 'Are you sure you want to leave?';
+      e.preventDefault();
+      e.returnValue = msg;
+      return msg;
+    });
+    // message from opener to allow close
+    window.addEventListener('message', (ev)=>{ if(ev.data && ev.data.type==='ALLOW_CLOSE'){ allowClose=true; }});
+  <\/script>
 </body>
 </html>
-  `);
+  `;
+
+  // write popup HTML
+  win.document.open();
+  win.document.write(popupHTML);
   win.document.close();
 
-  // ===== Load anti-close.js safely after popup loads =====
-  win.addEventListener('load', () => {
-    fetch('https://raw.githubusercontent.com/stetson609-wq/loading.../refs/heads/main/anti-close.js')
-      .then(res => res.text())
-      .then(code => {
-        const func = new Function(code + '\\n; function loop(){ try{ main(); } catch(e){console.error(e);} requestAnimationFrame(loop);} loop();');
-        win.eval(func);
-      })
-      .catch(err => console.error('Failed to load anti-close.js:', err));
-  });
+  // expose a small API: if parent user decides to allow close, send message to popup
+  return win;
+}
+
+/* ========= BUTTONS ========= */
+let popupWindow = null;
+openBtn.addEventListener('click', ()=>{ popupWindow = openAnimatedPopup(false); });
+openNewWindowBtn.addEventListener('click', ()=>{ popupWindow = openAnimatedPopup(true); });
+
+/* ========= OPTIONAL: expose Allow-Close from parent to popup ========= */
+function allowCloseEverywhere(){
+  allowCloseFlag = true;
+  heuristicLog.textContent = 'Close allowed by user (parent). You may now close the tab or popup.';
+  // notify popup if present
+  try{ if(popupWindow && !popupWindow.closed) popupWindow.postMessage({type:'ALLOW_CLOSE'}, '*'); }catch(e){}
+}
+
+/* Hook allowClose action to Ctrl+Shift click (same check used earlier) */
+allowCloseBtn.addEventListener('click', (ev)=> {
+  if(!(ev.ctrlKey && ev.shiftKey)){
+    allowCloseBtn.textContent = 'Hold Ctrl+Shift';
+    setTimeout(()=>{ allowCloseBtn.textContent = 'Allow Close'; },1100);
+    return;
+  }
+  allowCloseEverywhere();
 });
+
+/* ========= DEBUG: show current heuristic state periodically ========= */
+setInterval(()=>{
+  const guess = guessCloseOrigin();
+  heuristicLog.textContent = `Close-detection: ${guess.label} — confidence: ${guess.confidence}. Last interaction ${Math.round((Date.now()-lastUserInteraction)/1000)}s ago.`;
+}, 1200);
+
 </script>
 </body>
 </html>
