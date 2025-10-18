@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Personal Site</title>
+<meta name="theme-color" content="#111111">
+<style>
+  /* ===== Dark Theme & Responsive Layout ===== */
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #111111;
+    color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    text-shadow: 0 0 8px #00f0ff;
+  }
+  p {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    color: #ccc;
+    text-align: center;
+  }
+  button {
+    padding: 12px 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #00f0ff, #0050ff);
+    color: #111;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,255,255,0.4);
+    transition: all 0.3s ease;
+  }
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,255,255,0.6);
+  }
+  footer {
+    position: absolute;
+    bottom: 10px;
+    font-size: 0.85rem;
+    color: #666;
+    text-align: center;
+    width: 100%;
+  }
+  @media (max-width:600px){
+    h1{font-size:2rem;}
+    p{font-size:0.9rem;}
+    button{padding:10px 20px;font-size:0.9rem;}
+  }
+</style>
+</head>
+<body>
+<h1>Welcome</h1>
+<p>Click below to open the full-page embed with smooth animated favicon.</p>
+<button id="openBtn">Open Site</button>
+<footer>My Personal Project</footer>
+
+<script>
+const totalFrames = 64;
+const frameDelay = 90; // ms per frame
+const favicon16Folder = '/favicon16';
+const favicon32Folder = '/favicon32';
+
+// Generate frame URLs
+function generateFrames(folder,count){
+  const frames=[];
+  for(let i=0;i<count;i++){
+    const num=String(i).padStart(3,'0');
+    frames.push(`${folder}/frame_${num}.png`);
+  }
+  return frames;
+}
+
+const favicon16=generateFrames(favicon16Folder,totalFrames);
+const favicon32=generateFrames(favicon32Folder,totalFrames);
+
+document.getElementById('openBtn').addEventListener('click',()=>{
+  const win=window.open('about:blank','_blank');
+  if(!win) return alert('Popup blocked! Please allow popups.');
+
+  const frames=(window.devicePixelRatio>1 && favicon32.length>0)?favicon32:favicon16;
+
+  // Preload images
+  const images=frames.map(src=>{const img=new Image(); img.src=src; return img; });
+
+  // Write popup content
+  win.document.write(`
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <meta name="theme-color" content="#111111">
+    <link rel="icon" href="">
+    <style>
+      html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#111;}
+      iframe{width:100vw;height:100vh;border:none;}
+    </style>
+  </head>
+  <body>
+    <iframe src="https://nullxiety.com" allowfullscreen></iframe>
+    <script>
+      const frames=${JSON.stringify(frames)};
+      const frameDelay=${frameDelay};
+      const images=frames.map(src=>{const img=new Image();img.src=src;return img;});
+      const canvas=document.createElement('canvas');
+      const size=Math.min(32,window.devicePixelRatio>1?32:16);
+      canvas.width=size;
+      canvas.height=size;
+      const ctx=canvas.getContext('2d');
+      const link=document.querySelector('link[rel="icon"]')||document.createElement('link');
+      link.rel='icon';
+      document.head.appendChild(link);
+      let current=0;
+      function animate(){
+        const img=images[current];
+        if(img.complete){
+          ctx.clearRect(0,0,size,size);
+          ctx.drawImage(img,0,0,size,size);
+          link.href=canvas.toDataURL('image/png');
+        }
+        current=(current+1)%images.length;
+        setTimeout(animate,frameDelay);
+      }
+      animate();
+      window.addEventListener('resize',()=>{
+        const newSize=Math.min(32,window.devicePixelRatio>1?32:16);
+        canvas.width=newSize;
+        canvas.height=newSize;
+      });
+      window.addEventListener('beforeunload',function(e){
+        e.preventDefault();
+        e.returnValue='Are you sure you want to leave?';
+      });
+    </script>
+  </body>
+  </html>
+  `);
+  win.document.close();
+});
+</script>
+</body>
+</html>
